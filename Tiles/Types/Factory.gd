@@ -7,9 +7,11 @@ var requests = []
 
 func _ready():
 	tile.set_colour(Color.purple)
+	RoadNetwork.add_building(position())
 	make_bot()
 
 func _exit_tree():
+	RoadNetwork.remove_building(position())
 	for request in requests:
 		TaskManager.remove_dropoff(request)
 	$Timer.stop()
@@ -20,6 +22,7 @@ func _on_Timer_timeout():
 func make_bot():
 	var instance = Bot.instance()
 	instance.position = position()
+	instance.tile_position = position()
 	get_tree().root.add_child(instance)
 	TaskManager.add_bot(instance)
 	

@@ -7,10 +7,12 @@ var request
 
 func _ready():
 	tile.set_colour(Color.khaki)
+	RoadNetwork.add_building(position())
 	$Timer.start()
 
 func _exit_tree():
 	TaskManager.remove_pickup(request)
+	RoadNetwork.remove_building(position())
 	$Timer.stop()
 
 func _on_Timer_timeout():

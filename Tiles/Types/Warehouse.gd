@@ -9,6 +9,7 @@ var taken_spaces = []
 
 func _ready():
 	tile.set_colour(Color.lightgoldenrod)
+	RoadNetwork.add_building(position())
 	
 	for i in range(10):
 		make_open_space()
@@ -46,6 +47,7 @@ func complete(req):
 		make_open_space()
 
 func _exit_tree():
+	RoadNetwork.remove_building(position())
 	for space in open_spaces:
 		TaskManager.remove_dropoff(space)
 	

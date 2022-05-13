@@ -50,21 +50,21 @@ func make_matches():
 			for dropoff in maybe_dropoffs:
 				if dropoff.matches(try):
 					var task = Task.new(try, dropoff)
-					assign_bot_to_task(task)
-					maybe_dropoffs.erase(dropoff)
-					open_pickups.erase(try)
-					open_dropoffs.erase(dropoff)
-					break
+					if assign_bot_to_task(task):
+						maybe_dropoffs.erase(dropoff)
+						open_pickups.erase(try)
+						open_dropoffs.erase(dropoff)
+						break
 		else:
 			var try = maybe_dropoffs.pop_front()
 			for pickup in maybe_pickups:
 				if pickup.matches(try):
 					var task = Task.new(pickup, try)
-					assign_bot_to_task(task)
-					maybe_pickups.erase(pickup)
-					open_pickups.erase(pickup)
-					open_dropoffs.erase(try)
-					break
+					if assign_bot_to_task(task):
+						maybe_pickups.erase(pickup)
+						open_pickups.erase(pickup)
+						open_dropoffs.erase(try)
+						break
 
 func assign_bot_to_task(task):
 	var best
@@ -73,13 +73,17 @@ func assign_bot_to_task(task):
 	
 	for bot in idle_bots:
 		var value = bot.compute_cost(task)
-		if value < best_value:
+		if value > -1 and value < best_value:
 			best = bot
 			best_value = value
+	
+	if best == null:
+		return false
 	
 	best.assign(task)
 	idle_bots.erase(best)
 	working_bots.append(best)
+	return true
 	
 func priority_sort(one, two):
 	if one.priority() > two.priority():

@@ -19,7 +19,7 @@ func priority():
 	return base_priority + time_priority * elapsed
 
 func matches(other):
-	return resource == other.resource
+	return resource == other.resource and RoadNetwork.are_connected(position(), other.position())
 
 func position():
 	return source.position()
