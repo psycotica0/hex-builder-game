@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Tiles/Raw/roads.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Tiles/Types/Road.gd" type="Script" id=2]
+
+[node name="Road" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="roads" parent="." instance=ExtResource( 1 )]

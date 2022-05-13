@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Tiles/Raw/warehouse.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Tiles/Types/Warehouse.gd" type="Script" id=2]
+
+[node name="Warehouse" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="warehouse" parent="." instance=ExtResource( 1 )]

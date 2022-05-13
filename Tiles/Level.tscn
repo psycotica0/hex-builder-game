@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Tiles/Level.gd" type="Script" id=1]
+
+[node name="Level" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.762939, 0.64647, 0, -0.64647, 0.762939, 0, 1.87364, 2.5182 )
+current = true
