@@ -2,35 +2,18 @@ extends Node
 
 const Task = preload("res://TaskManager/Task.gd")
 
-var open_pickups = []
-var open_dropoffs = []
-
 var working_bots = []
 var idle_bots = []
 
+var number_of_bots = 0
+
 # TODO: Open question, how do I want to handle an interrupted task such that I have a bot that's holding something but can no longer complete the task it's been given
 
-func add_pickup(pickup):
-	open_pickups.append(pickup)
-
-func remove_pickup(pickup):
-	# XXX: These should cancel in-progress tasks too
-	open_pickups.erase(pickup)
-
-func add_dropoff(dropoff):
-	open_dropoffs.append(dropoff)
-
-func remove_dropoff(dropoff):
-	# XXX: These should cancel in-progress tasks too
-	open_dropoffs.erase(dropoff)
-
 func add_bot(bot):
+	number_of_bots += 1
 	idle_bots.append(bot)
 
 func _process(delta):
-	open_pickups.sort_custom(self, "priority_sort")
-	open_dropoffs.sort_custom(self, "priority_sort")
-	
 	make_matches()
 	for bot in working_bots:
 		if bot.progress(delta):
@@ -38,33 +21,44 @@ func _process(delta):
 			idle_bots.append(bot)
 
 func make_matches():
-	var maybe_pickups = open_pickups.duplicate()
-	var maybe_dropoffs = open_dropoffs.duplicate()
+	if idle_bots.empty():
+		return
 	
-	# I may want to find the highest value combination of pickups and dropoffs
-	# But that may lead to starvation of a high-value pickup if there's no high-value drop-offs
-	# But... maybe that's more right? Unsure.
-	while not (idle_bots.empty() or maybe_pickups.empty() or maybe_dropoffs.empty()):
-		if maybe_pickups[0].priority() > maybe_dropoffs[0].priority():
-			var try = maybe_pickups.pop_front()
-			for dropoff in maybe_dropoffs:
-				if dropoff.matches(try):
-					var task = Task.new(try, dropoff)
-					if assign_bot_to_task(task):
-						maybe_dropoffs.erase(dropoff)
-						open_pickups.erase(try)
-						open_dropoffs.erase(dropoff)
-						break
-		else:
-			var try = maybe_dropoffs.pop_front()
-			for pickup in maybe_pickups:
-				if pickup.matches(try):
-					var task = Task.new(pickup, try)
-					if assign_bot_to_task(task):
-						maybe_pickups.erase(pickup)
-						open_pickups.erase(pickup)
-						open_dropoffs.erase(try)
-						break
+	var taken_pickups = []
+	var taken_dropoffs = []
+	
+	for offer in Market.get_offers():
+		if idle_bots.empty():
+			break
+		
+		if taken_pickups.has(offer.pickup):
+			continue
+		
+		if taken_dropoffs.has(offer.dropoff):
+			continue
+		
+		var bot = bot_for_offer(offer)
+		if not bot:
+			continue
+		
+		taken_pickups.append(offer.pickup)
+		taken_dropoffs.append(offer.dropoff)
+		bot.assign(offer)
+		working_bots.append(bot)
+		idle_bots.erase(bot)
+
+func bot_for_offer(offer):
+	var best
+	# I didn't want to think about edge cases, and this should be plenty big
+	var best_value = 2^62
+	
+	for bot in idle_bots:
+		var value = bot.compute_cost(offer)
+		if value > -1 and value < best_value:
+			best = bot
+			best_value = value
+	
+	return best
 
 func assign_bot_to_task(task):
 	var best

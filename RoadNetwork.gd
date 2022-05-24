@@ -66,5 +66,8 @@ func get_id(position):
 func find_path(position1, position2):
 	return network.get_point_path(get_id(position1), get_id(position2))
 
+func path_length(position1, position2):
+	return find_path(position1, position2).size()
+
 func are_connected(position1, position2):
 	return not find_path(position1, position2).empty()

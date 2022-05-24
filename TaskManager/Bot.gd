@@ -11,15 +11,16 @@ var path = []
 enum STATE {IDLE, STARTING, DOING}
 var current_state = STATE.IDLE
 
-func assign(task):
-	current_task = task
+func assign(offer):
+	current_task = offer
+	current_task.accept()
 	current_state = STATE.STARTING
-	var p = RoadNetwork.find_path(tile_position, task.source.position())
-	p.append_array(RoadNetwork.find_path(task.source.position(), task.destination.position()))
+	var p = RoadNetwork.find_path(tile_position, offer.pickup.position())
+	p.append_array(RoadNetwork.find_path(offer.pickup.position(), offer.dropoff.position()))
 	path = Array(p)
 
-func compute_cost(task):
-	var p = RoadNetwork.find_path(tile_position, task.source.position())
+func compute_cost(offer):
+	var p = RoadNetwork.find_path(tile_position, offer.pickup.position())
 	if p.empty():
 		return -1
 	else:
@@ -43,13 +44,13 @@ func progress(delta):
 		path.pop_front()
 		position = goal
 		tile_position = goal
-		if current_state == STATE.STARTING and goal == current_task.source.position():
-			inventory = current_task.source.resource
-			current_task.source.complete()
+		if current_state == STATE.STARTING and goal == current_task.pickup.position():
+			inventory = current_task.commodity()
+			current_task.start()
 			current_state = STATE.DOING
-		elif current_state == STATE.DOING and goal == current_task.destination.position():
+		elif current_state == STATE.DOING and goal == current_task.dropoff.position():
 			inventory = null
-			current_task.destination.complete()
+			current_task.complete()
 			current_state = STATE.IDLE
 			return true
 	else:
