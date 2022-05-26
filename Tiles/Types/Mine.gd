@@ -13,6 +13,7 @@ func _ready():
 	$Timer.start()
 
 func _exit_tree():
+	Market.disconnect("seeking_offers", self, "on_seeking_offers")
 	RoadNetwork.remove_building(position())
 	$Timer.stop()
 
@@ -47,13 +48,16 @@ class Offer:
 		return dropoff.commodity
 		
 	func benefit():
-		var benefit = generation.get_benefit(0)
+		var benefit = dropoff.benefit() #generation.get_benefit(0)
 		var path = RoadNetwork.path_length(pickup.position(), dropoff.position())
 		
 		if path == 0:
 			return 0
 		else:
 			return benefit - path
+	
+	func building():
+		return pickup
 
 func on_seeking_offers(generation):
 	if inventory == 0 or accepted_request:

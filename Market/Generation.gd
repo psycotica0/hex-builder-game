@@ -29,6 +29,9 @@ func get_requests(commodity):
 	return requests[commodity].requests()
 
 func get_offers():
+	prints("TOP")
+	for offer in offers:
+		prints("Offer", offer.building().get_path(), "->", offer.dropoff.building().get_path(), ":", offer.benefit())
 	return offers
 
 func get_benefit(commodity):

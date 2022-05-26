@@ -15,6 +15,7 @@ func _ready():
 	make_bot()
 
 func _exit_tree():
+	Market.disconnect("seeking_requests", self, "on_seeking_requests")
 	RoadNetwork.remove_building(position())
 	for request in requests:
 		TaskManager.remove_dropoff(request)
@@ -56,6 +57,9 @@ class Request:
 	
 	func complete():
 		source.complete(self)
+	
+	func building():
+		return source
 
 func on_seeking_requests(generation):
 	var n = 2 - (inventory + in_progress_requests.size())
