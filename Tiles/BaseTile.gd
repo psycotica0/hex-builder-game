@@ -6,6 +6,7 @@ const TYPES = [
 	preload("res://Tiles/Types/Road.tscn"),
 	preload("res://Tiles/Types/Mine.tscn"),
 	preload("res://Tiles/Types/Warehouse.tscn"),
+	preload("res://Tiles/Types/Factory1.tscn"),
 	preload("res://Tiles/Types/Factory.tscn")
 ]
 

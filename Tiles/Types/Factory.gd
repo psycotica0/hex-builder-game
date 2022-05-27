@@ -44,7 +44,7 @@ func position():
 
 class Request:
 	var source
-	var commodity = 0
+	var commodity = 1
 
 	func benefit():
 		return (1.0 - inverse_lerp(0, 20, TaskManager.number_of_bots)) * 100

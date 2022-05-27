@@ -20,4 +20,4 @@ func get_offers():
 func get_benefit(commodity):
 	assert(current_generation)
 	
-	current_generation.get_benefit(commodity)
+	return current_generation.get_benefit(commodity)
