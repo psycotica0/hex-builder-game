@@ -2,6 +2,7 @@ extends Spatial
 
 var speed = 1
 
+var index
 var position
 var tile_position
 var current_task

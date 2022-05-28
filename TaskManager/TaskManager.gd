@@ -7,11 +7,15 @@ var idle_bots = []
 
 var number_of_bots = 0
 
+var level
+
 # TODO: Open question, how do I want to handle an interrupted task such that I have a bot that's holding something but can no longer complete the task it's been given
 
 func add_bot(bot):
+	bot.index = number_of_bots
 	number_of_bots += 1
 	idle_bots.append(bot)
+	level.set_bot_state(bot.index, bot.position.x, bot.position.y, 1.0)
 
 func _process(delta):
 	make_matches()
@@ -19,6 +23,7 @@ func _process(delta):
 		if bot.progress(delta):
 			working_bots.erase(bot)
 			idle_bots.append(bot)
+		level.set_bot_state(bot.index, bot.position.x, bot.position.y, 1.0)
 
 func make_matches():
 	if idle_bots.empty():

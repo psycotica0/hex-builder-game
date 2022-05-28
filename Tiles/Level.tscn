@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Tiles/Level.gd" type="Script" id=1]
+[ext_resource path="res://Tiles/BotDraw.shader" type="Shader" id=2]
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = ExtResource( 2 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 0.062, 0.062, 0.062 )
 
 [node name="Level" type="Spatial"]
 script = ExtResource( 1 )
@@ -8,3 +15,11 @@ script = ExtResource( 1 )
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.762939, 0.64647, 0, -0.64647, 0.762939, 0, 1.87364, 2.5182 )
 current = true
+
+[node name="BotParticles" type="Particles" parent="."]
+amount = 25
+lifetime = 86400.0
+explosiveness = 1.0
+visibility_aabb = AABB( -100, -100, -100, 200, 200, 200 )
+process_material = SubResource( 4 )
+draw_pass_1 = SubResource( 2 )

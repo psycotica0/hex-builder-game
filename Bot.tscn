@@ -1,8 +1,13 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://TaskManager/Bot.gd" type="Script" id=1]
 
+[sub_resource type="SpatialMaterial" id=2]
+flags_transparent = true
+albedo_color = Color( 1, 1, 1, 0.498039 )
+
 [sub_resource type="CubeMesh" id=1]
+material = SubResource( 2 )
 size = Vector3( 0.25, 0.25, 0.25 )
 
 [node name="Bot" type="Spatial"]
