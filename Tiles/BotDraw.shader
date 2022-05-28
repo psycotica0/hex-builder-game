@@ -2,7 +2,8 @@ shader_type particles;
 
 uniform sampler2D bot_data;
 
-const float SPEED = 1.0;
+const float SPEED = 2.0;
+const float ACCEL = 4.0;
 const float DROP_SPEED = 5.0;
 const float DIST = 0.3;
 
@@ -27,6 +28,15 @@ uint hash(uint x) {
   x = ((x >> uint(16)) ^ x) * uint(73244475);
   x = (x >> uint(16)) ^ x;
   return x;
+}
+
+vec2 move_towards_by_at_most(vec2 source, vec2 target, float max_amount) {
+	vec2 dir = target - source;
+	if (length(dir) < max_amount) {
+		return target;
+	} else {
+		return source + max_amount * normalize(dir);
+	}
 }
 
 void vertex() {
@@ -61,10 +71,10 @@ void vertex() {
 	
 		if (d < 1.0) {
 			vec2 v = mix(full_out, vec2(perp.x, perp.y), d);
-			VELOCITY.xz = normalize(v);
+			VELOCITY.xz = move_towards_by_at_most(VELOCITY.xz, v, ACCEL * DELTA);
 		} else {
 			vec2 v = mix(full_in, vec2(perp.x, perp.y), 1.0/d);
-			VELOCITY.xz = normalize(v);
+			VELOCITY.xz = move_towards_by_at_most(VELOCITY.xz, v, ACCEL * DELTA);
 		}
 		
 		if (TRANSFORM[3][1] > active_height) {

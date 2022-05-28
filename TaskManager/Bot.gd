@@ -1,10 +1,13 @@
 extends Spatial
 
+var DEBUG_PATHS = true
+
 var speed = 1
 
 var index
+var progress = 0.0
 var position
-var tile_position
+#var tile_position
 var current_task
 var inventory
 var path = []
@@ -16,12 +19,16 @@ func assign(offer):
 	current_task = offer
 	current_task.accept()
 	current_state = STATE.STARTING
-	var p = RoadNetwork.find_path(tile_position, offer.pickup.position())
+	var p = RoadNetwork.find_path(position, offer.pickup.position())
 	p.append_array(RoadNetwork.find_path(offer.pickup.position(), offer.dropoff.position()))
 	path = Array(p)
+	progress = 0.0
+	if DEBUG_PATHS:
+		prints("Assigned", index, position, path)
+	position = path.pop_front()
 
 func compute_cost(offer):
-	var p = RoadNetwork.find_path(tile_position, offer.pickup.position())
+	var p = RoadNetwork.find_path(position, offer.pickup.position())
 	if p.empty():
 		return -1
 	else:
@@ -39,22 +46,19 @@ func progress(delta):
 		current_state = STATE.IDLE
 		return true
 	
-	var goal = path[0]
+	progress += delta * speed;
 	
-	if position.distance_to(goal) < delta * speed:
-		path.pop_front()
-		position = goal
-		tile_position = goal
-		if current_state == STATE.STARTING and goal == current_task.pickup.position():
+	if progress > 1.0:
+		position = path.pop_front()
+		progress -= 1.0;
+		if current_state == STATE.STARTING and position == current_task.pickup.position():
 			inventory = current_task.commodity()
 			current_task.start()
 			current_state = STATE.DOING
-		elif current_state == STATE.DOING and goal == current_task.dropoff.position():
+		elif current_state == STATE.DOING and position == current_task.dropoff.position():
 			inventory = null
 			current_task.complete()
 			current_state = STATE.IDLE
 			return true
-	else:
-		position = position.move_toward(goal, delta * speed)
 	
 	return false
