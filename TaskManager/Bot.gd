@@ -42,15 +42,9 @@ func progress(delta):
 	if current_state == STATE.IDLE:
 		return true
 	
-	if path.empty():
-		current_state = STATE.IDLE
-		return true
-	
 	progress += delta * speed;
 	
 	if progress > 1.0:
-		position = path.pop_front()
-		progress -= 1.0;
 		if current_state == STATE.STARTING and position == current_task.pickup.position():
 			inventory = current_task.commodity()
 			current_task.start()
@@ -60,5 +54,12 @@ func progress(delta):
 			current_task.complete()
 			current_state = STATE.IDLE
 			return true
+		
+		if path.empty():
+			current_state = STATE.IDLE
+			return true
+		
+		position = path.pop_front()
+		progress -= 1.0;
 	
 	return false

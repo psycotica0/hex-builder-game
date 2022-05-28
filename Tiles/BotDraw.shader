@@ -39,6 +39,21 @@ vec2 move_towards_by_at_most(vec2 source, vec2 target, float max_amount) {
 	}
 }
 
+vec4 color(float state) {
+	vec4 white = vec4(1.0, 1.0, 1.0, 1.0);
+	vec4 blue = vec4(0.3, 0.3, 1.0, 1.0);
+	vec4 red = vec4(1.0, 0.3, 0.3, 1.0);
+	
+	switch(int(round(state))) {
+		case 2:
+			return blue;
+		case 3:
+			return red;
+		default:
+			return white;
+	}
+}
+
 void vertex() {
 	vec4 data = texelFetch(bot_data, ivec2(INDEX, 0), 0);
 	
@@ -59,6 +74,7 @@ void vertex() {
 		);
 	
 		vec2 target = vec2(data.r, data.g);
+		COLOR = color(data.b);
 	
 		vec2 full_out = normalize(pos - target) * SPEED;
 		vec2 full_in = normalize(target - pos) * SPEED;

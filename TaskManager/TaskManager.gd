@@ -23,7 +23,10 @@ func _process(delta):
 		if bot.progress(delta):
 			working_bots.erase(bot)
 			idle_bots.append(bot)
-		level.set_bot_state(bot.index, bot.position.x, bot.position.y, 1.0)
+		var state = 1.0
+		if bot.inventory != null:
+			state += bot.inventory + 1;
+		level.set_bot_state(bot.index, bot.position.x, bot.position.y, state)
 
 func make_matches():
 	if idle_bots.empty():
