@@ -11,7 +11,7 @@ const TYPES = [
 ]
 
 enum MOUSE_STATE { NONE, HOVER, HOLDING }
-var mouse_state
+var mouse_state = MOUSE_STATE.NONE
 
 var current_type = -1
 
