@@ -12,7 +12,6 @@ func _ready():
 	Market.connect("seeking_requests", self, "on_seeking_requests")
 	tile.set_colour(Color.purple)
 	RoadNetwork.add_building(position())
-	make_bot()
 
 func _exit_tree():
 	Market.disconnect("seeking_requests", self, "on_seeking_requests")

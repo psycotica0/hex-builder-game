@@ -3,10 +3,10 @@
 [ext_resource path="res://Tiles/Level.gd" type="Script" id=1]
 [ext_resource path="res://Tiles/BotDraw.shader" type="Shader" id=2]
 
-[sub_resource type="ShaderMaterial" id=4]
+[sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 2 )
 
-[sub_resource type="Shader" id=5]
+[sub_resource type="Shader" id=2]
 code = "shader_type spatial;
 render_mode unshaded;
 
@@ -21,11 +21,11 @@ void fragment() {
 	ALBEDO = COLOR.rgb;
 }"
 
-[sub_resource type="ShaderMaterial" id=6]
-shader = SubResource( 5 )
+[sub_resource type="ShaderMaterial" id=3]
+shader = SubResource( 2 )
 
-[sub_resource type="QuadMesh" id=7]
-material = SubResource( 6 )
+[sub_resource type="QuadMesh" id=4]
+material = SubResource( 3 )
 size = Vector2( 0.125, 0.125 )
 
 [node name="Level" type="Spatial"]
@@ -40,5 +40,5 @@ amount = 25
 lifetime = 86400.0
 explosiveness = 1.0
 visibility_aabb = AABB( -100, -100, -100, 200, 200, 200 )
-process_material = SubResource( 4 )
-draw_pass_1 = SubResource( 7 )
+process_material = SubResource( 1 )
+draw_pass_1 = SubResource( 4 )

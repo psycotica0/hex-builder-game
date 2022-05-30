@@ -61,14 +61,13 @@ func rotate_type():
 	if current_type >= TYPES.size():
 		current_type = -1
 	
-	set_type(current_type)
+	set_type(TYPES[current_type])
 
-func set_type(val):
+func set_type(type):
 	for c in $Holder/Type.get_children():
 		$Holder/Type.remove_child(c)
 		set_colour(null)
 	
-	if val >= 0:
-		var type = TYPES[val].instance()
-		type.tile = self
-		$Holder/Type.add_child(type)
+	var building = type.instance()
+	building.tile = self
+	$Holder/Type.add_child(building)
