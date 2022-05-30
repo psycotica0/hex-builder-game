@@ -1,7 +1,5 @@
 extends Spatial
 
-var DEBUG_PATHS = true
-
 var speed = 1
 
 var index
@@ -23,7 +21,7 @@ func assign(offer):
 	p.append_array(RoadNetwork.find_path(offer.pickup.position(), offer.dropoff.position()))
 	path = Array(p)
 	progress = 0.0
-	if DEBUG_PATHS:
+	if Flags.DEBUG_PATHS:
 		prints("Assigned", index, position, path)
 	position = path.pop_front()
 

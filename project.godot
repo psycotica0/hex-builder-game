@@ -24,6 +24,7 @@ config/icon="res://icon.png"
 TaskManager="*res://TaskManager/TaskManager.gd"
 RoadNetwork="*res://RoadNetwork.gd"
 Market="*res://Market/Market.gd"
+Flags="*res://Flags.tscn"
 
 [rendering]
 

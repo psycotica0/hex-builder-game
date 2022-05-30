@@ -1,7 +1,5 @@
 extends Spatial
 
-var DEBUG_BOT_LOCATION = false
-
 var tile
 const Bot = preload("res://Bot.tscn")
 const Requirement = preload("res://TaskManager/Requirement.gd")
@@ -30,7 +28,7 @@ func _on_Timer_timeout():
 func make_bot():
 	var instance = Bot.instance()
 	instance.position = position()
-	if DEBUG_BOT_LOCATION:
+	if Flags.DEBUG_BOT_LOCATION:
 		get_tree().root.add_child(instance)
 	TaskManager.add_bot(instance)
 	
