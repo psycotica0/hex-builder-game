@@ -78,6 +78,10 @@ func select_tile(tile):
 	
 	tile.select()
 	
+	add_tile_menu(tile)
+	reconcile_menus()
+
+func add_tile_menu(tile):
 	var new_menus = tile.menus()
 	if menus.empty():
 		# Start out with all menus
@@ -94,6 +98,14 @@ func select_tile(tile):
 			
 			if not p:
 				menus.erase(menu)
+
+func deselect_tile(tile):
+	selected.erase(tile)
+	tile.deselect()
+	
+	menus.clear()
+	for tile in selected:
+		add_tile_menu(tile)
 	
 	reconcile_menus()
 
@@ -124,7 +136,10 @@ func _on_BaseTile_mouse_entered(tile):
 		MOUSE_STATE.HOVERING:
 			tile.hover()
 		MOUSE_STATE.SELECTING:
-			select_tile(tile)
+			if selected.has(tile) and Input.is_action_pressed("selection_add"):
+				deselect_tile(tile)
+			else:
+				select_tile(tile)
 
 func _on_BaseTile_mouse_exited(tile):
 	match mouse_state:
@@ -136,8 +151,14 @@ func _on_BaseTile_input_event(camera, event, click_position, click_normal, shape
 		if event.pressed:
 			if mouse_state == MOUSE_STATE.HOVERING:
 				mouse_state = MOUSE_STATE.SELECTING
-				clear_selection()
-				select_tile(tile)
+				
+				if not Input.is_action_pressed("selection_add"):
+					clear_selection()
+				
+				if selected.has(tile) and Input.is_action_pressed("selection_add"):
+					deselect_tile(tile)
+				else:
+					select_tile(tile)
 		else:
 			if mouse_state == MOUSE_STATE.SELECTING:
 				mouse_state = MOUSE_STATE.HOVERING
