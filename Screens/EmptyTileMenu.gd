@@ -7,7 +7,7 @@ func _ready():
 
 func build(type):
 	for tile in level.selected:
-		tile.set_type(type)
+		tile.build(type)
 	level.clear_selection()
 
 func _on_Road_pressed():

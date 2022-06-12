@@ -22,3 +22,7 @@ shape = SubResource( 1 )
 
 [node name="Construction" parent="Holder" instance=ExtResource( 3 )]
 visible = false
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

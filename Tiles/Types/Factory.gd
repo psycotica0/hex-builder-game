@@ -9,11 +9,16 @@ var in_progress_requests = []
 var inventory = 0
 
 func _ready():
-	Market.connect("seeking_requests", self, "on_seeking_requests")
 	tile.set_colour(Color.purple)
-	RoadNetwork.add_building(position())
 
 func _exit_tree():
+	disable()
+
+func enable():
+	Market.connect("seeking_requests", self, "on_seeking_requests")
+	RoadNetwork.add_building(position())
+
+func disable():
 	Market.disconnect("seeking_requests", self, "on_seeking_requests")
 	RoadNetwork.remove_building(position())
 	for request in requests:

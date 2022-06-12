@@ -10,13 +10,17 @@ var inventory = 0
 var produced = false
 
 func _ready():
-	Market.connect("seeking_requests", self, "on_seeking_requests")
-	Market.connect("seeking_offers", self, "on_seeking_offers")
 	tile.set_colour(Color.red)
-	RoadNetwork.add_building(position())
-#	make_bot()
 
 func _exit_tree():
+	disable()
+
+func enable():
+	Market.connect("seeking_requests", self, "on_seeking_requests")
+	Market.connect("seeking_offers", self, "on_seeking_offers")
+	RoadNetwork.add_building(position())
+
+func disable():
 	Market.disconnect("seeking_requests", self, "on_seeking_requests")
 	Market.disconnect("seeking_offers", self, "on_seeking_offers")
 	RoadNetwork.remove_building(position())

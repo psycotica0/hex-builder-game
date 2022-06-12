@@ -9,15 +9,21 @@ const INITIAL_BOTS = 4
 const Bot = preload("res://Bot.tscn")
 
 func _ready():
-	Market.connect("seeking_offers", self, "on_seeking_offers")
 	tile.set_colour(Color.white)
-	RoadNetwork.add_building(position())
-	$Timer.start()
+	enable()
 	
 	for _i in range(INITIAL_BOTS):
 		make_bot()
 
 func _exit_tree():
+	disable()
+
+func enable():
+	Market.connect("seeking_offers", self, "on_seeking_offers")
+	RoadNetwork.add_building(position())
+	$Timer.start()
+
+func disable():
 	Market.disconnect("seeking_offers", self, "on_seeking_offers")
 	RoadNetwork.remove_building(position())
 	$Timer.stop()

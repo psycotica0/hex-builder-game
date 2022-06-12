@@ -8,6 +8,8 @@ enum SELECT_STATE { NONE, HOVER, SELECTED }
 var select_state = SELECT_STATE.NONE
 
 var current_type
+var construction = false
+var building
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -49,10 +51,18 @@ func menus():
 	var base = preload("res://Screens/BaseTileMenu.tscn")
 	var empty = preload("res://Screens/EmptyTileMenu.tscn")
 	
-	if current_type:
+	if construction:
+		return [base]
+	elif current_type:
 		return [base]
 	else:
 		return [base, empty]
+
+func build(type):
+	construction = true
+	$Holder/Construction.visible = true
+	$Timer.start()
+	set_type(type)
 
 func set_type(type):
 	for c in $Holder/Type.get_children():
@@ -60,6 +70,11 @@ func set_type(type):
 		set_colour(null)
 	
 	current_type = type
-	var building = type.instance()
+	building = type.instance()
 	building.tile = self
 	$Holder/Type.add_child(building)
+
+func _on_Timer_timeout():
+	$Holder/Construction.visible = false
+	construction = false
+	building.enable()

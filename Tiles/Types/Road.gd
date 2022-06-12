@@ -4,9 +4,14 @@ var tile
 
 func _ready():
 	tile.set_colour(Color.lightseagreen)
-	RoadNetwork.add_road(position())
 
 func _exit_tree():
+	disable()
+
+func enable():
+	RoadNetwork.add_road(position())
+
+func disable():
 	RoadNetwork.remove_road(position())
 
 func position():

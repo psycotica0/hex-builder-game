@@ -15,6 +15,9 @@ func add_building(position):
 	buildings[position] = id
 
 func remove_building(position):
+	if not buildings.has(position):
+		return
+	
 	var id = buildings[position]
 	buildings.erase(position)
 	network.remove_point(id)
@@ -32,6 +35,9 @@ func add_road(position):
 	roads[position] = id
 
 func remove_road(position):
+	if not roads.has(position):
+		return
+	
 	var id = roads[position]
 	roads.erase(position)
 	network.remove_point(id)

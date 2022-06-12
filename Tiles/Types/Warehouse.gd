@@ -112,10 +112,7 @@ class Slot:
 var slots = []
 
 func _ready():
-	Market.connect("seeking_offers", self, "on_seeking_offers")
-	Market.connect("seeking_requests", self, "on_seeking_requests")
 	tile.set_colour(Color.lightgoldenrod)
-	RoadNetwork.add_building(position())
 	
 	for i in range(10):
 		slots.append(Slot.new(self))
@@ -125,6 +122,15 @@ func position():
 	return Vector2(o.x, o.z)
 
 func _exit_tree():
+	disable()
+
+func enable():
+	Market.connect("seeking_offers", self, "on_seeking_offers")
+	Market.connect("seeking_requests", self, "on_seeking_requests")
+	
+	RoadNetwork.add_building(position())
+
+func disable():
 	Market.disconnect("seeking_offers", self, "on_seeking_offers")
 	Market.disconnect("seeking_requests", self, "on_seeking_requests")
 	RoadNetwork.remove_building(position())
