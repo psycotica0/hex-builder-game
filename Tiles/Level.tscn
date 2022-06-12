@@ -42,3 +42,5 @@ explosiveness = 1.0
 visibility_aabb = AABB( -100, -100, -100, 200, 200, 200 )
 process_material = SubResource( 1 )
 draw_pass_1 = SubResource( 4 )
+
+[node name="UI" type="CanvasLayer" parent="."]

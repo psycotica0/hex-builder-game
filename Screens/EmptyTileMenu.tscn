@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Screens/EmptyTileMenu.gd" type="Script" id=1]
+
+[node name="EmptyTileMenu" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Control" type="Control" parent="."]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -10.0
+margin_bottom = 10.0
+mouse_filter = 2
+custom_constants/separation = 20
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Road" type="Button" parent="Control/HBoxContainer"]
+margin_left = 301.0
+margin_right = 344.0
+margin_bottom = 20.0
+text = "Road"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Warehouse" type="Button" parent="Control/HBoxContainer"]
+margin_left = 364.0
+margin_right = 448.0
+margin_bottom = 20.0
+text = "Warehouse"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Mine" type="Button" parent="Control/HBoxContainer"]
+margin_left = 468.0
+margin_right = 512.0
+margin_bottom = 20.0
+text = "Mine"
+
+[node name="Red Factory" type="Button" parent="Control/HBoxContainer"]
+margin_left = 532.0
+margin_right = 618.0
+margin_bottom = 20.0
+text = "Red Factory"
+
+[node name="Bot Factory" type="Button" parent="Control/HBoxContainer"]
+margin_left = 638.0
+margin_right = 722.0
+margin_bottom = 20.0
+text = "Bot Factory"
+[connection signal="pressed" from="Control/HBoxContainer/Road" to="." method="_on_Road_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/Warehouse" to="." method="_on_Warehouse_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/Mine" to="." method="_on_Mine_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/Red Factory" to="." method="_on_Red_Factory_pressed"]
+[connection signal="pressed" from="Control/HBoxContainer/Bot Factory" to="." method="_on_Bot_Factory_pressed"]
