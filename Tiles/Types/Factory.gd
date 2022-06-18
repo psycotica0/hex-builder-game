@@ -2,7 +2,6 @@ extends Spatial
 
 var tile
 const Bot = preload("res://Bot.tscn")
-const Requirement = preload("res://TaskManager/Requirement.gd")
 var requests = []
 
 var in_progress_requests = []

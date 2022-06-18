@@ -1,7 +1,5 @@
 extends Node
 
-const Task = preload("res://TaskManager/Task.gd")
-
 var working_bots = []
 var idle_bots = []
 

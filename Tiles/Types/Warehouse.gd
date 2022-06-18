@@ -2,8 +2,6 @@ extends Spatial
 
 var tile
 
-const Requirement = preload("res://TaskManager/Requirement.gd")
-
 var goals = {
 	0: 7
 }
