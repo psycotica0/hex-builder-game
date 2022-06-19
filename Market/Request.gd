@@ -27,7 +27,7 @@ func on_seeking_requests(generation):
 	request.source = self
 	request.commodity = commodity
 	request.price_sheet = price_sheet
-	request.position = position()
+	request.position = position
 	generation.add_request(request)
 
 func complete(_proposal):
@@ -39,9 +39,8 @@ func accept(_proposal):
 	accepted = true
 	emit_signal("accepted", self)
 
-# XXX: DELETE ONCE MIGRATION COMPLETE
-func position():
-	return position
+func debug_name():
+	return "%s" % get_node("/root/Level").get_path_to(self)
 
 class Request:
 	var source
@@ -52,14 +51,11 @@ class Request:
 	func benefit():
 		return price_sheet.get(commodity, 0.0)
 	
-	func position():
-		return position
-	
 	func accept():
 		source.accept(self)
 	
 	func complete():
 		source.complete(self)
 	
-	func building():
-		return source.building()
+	func _to_string():
+		return "%s(%d)" % [source.debug_name(), commodity]

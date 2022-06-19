@@ -26,7 +26,7 @@ func on_seeking_offers(generation):
 		return
 	
 	for request in generation.get_requests(commodity):
-		if request.position() == position:
+		if request.position == position:
 			continue
 		
 		var offer = Proposal.new()
@@ -34,7 +34,6 @@ func on_seeking_offers(generation):
 		offer.dropoff = request
 		offer.pickup = self
 		offer.keep_benefit = price_sheet.get(commodity, 0.0)
-		offer.building = get_parent()
 		generation.add_offer(offer)
 
 func complete(_proposal):
@@ -46,21 +45,16 @@ func accept(_proposal):
 	accepted = true
 	emit_signal("accepted", self)
 
-# XXX: DELETE ONCE MIGRATION COMPLETE
-func position():
-	return position
+func debug_name():
+	return "%s" % get_node("/root/Level").get_path_to(self)
 
 class Proposal:
 	var dropoff
 	var pickup
 	var generation
 	var keep_benefit
-	# XXX: DELETE
-	var building
 	
 	func accept():
-		if Flags.DEBUG_OFFERS:
-			prints("Accepted", building().get_path(), "->", dropoff.building().get_path(), ":", benefit())
 		pickup.accept(self)
 		dropoff.accept()
 	
@@ -75,12 +69,12 @@ class Proposal:
 		
 	func benefit():
 		var total = dropoff.benefit()
-		var path = RoadNetwork.path_length(pickup.position, dropoff.position())
+		var path = RoadNetwork.path_length(pickup.position, dropoff.position)
 		
 		if path == 0:
 			return 0
 		else:
 			return total - keep_benefit - path
-		
-	func building():
-		return building
+	
+	func _to_string():
+		return "%s -> %s: %f" % [pickup.debug_name(), dropoff, benefit()]

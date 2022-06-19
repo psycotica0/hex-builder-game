@@ -28,11 +28,13 @@ func get_requests(commodity):
 		return []
 	return requests[commodity].requests()
 
+func get_all_requests():
+	var l = []
+	for commodity in requests:
+		l += get_requests(commodity)
+	return l
+
 func get_offers():
-	if Flags.DEBUG_OFFERS:
-		prints("TOP")
-		for offer in offers:
-			prints("Offer", offer.building().get_path(), "->", offer.dropoff.building().get_path(), ":", offer.benefit())
 	return offers
 
 func get_benefit(commodity):

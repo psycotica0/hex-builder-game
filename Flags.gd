@@ -1,8 +1,11 @@
 extends Node
 
 var DEBUG_BOT_LOCATION = false
-var DEBUG_OFFERS = false
-var DEBUG_PATHS = true
+var DEBUG_PATHS = false
 
-func _ready():
-	pass
+var NONE = 0
+var ORDER_LIST = 1 << 0
+var REQUEST_LIST = 1 << 1
+var ASSIGNMENTS = 1 << 2
+
+var DEBUG_OFFERS = ORDER_LIST | REQUEST_LIST | ASSIGNMENTS

@@ -17,8 +17,8 @@ func assign(offer):
 	current_task = offer
 	current_task.accept()
 	current_state = STATE.STARTING
-	var p = RoadNetwork.find_path(position, offer.pickup.position())
-	p.append_array(RoadNetwork.find_path(offer.pickup.position(), offer.dropoff.position()))
+	var p = RoadNetwork.find_path(position, offer.pickup.position)
+	p.append_array(RoadNetwork.find_path(offer.pickup.position, offer.dropoff.position))
 	path = Array(p)
 	progress = 0.0
 	if Flags.DEBUG_PATHS:
@@ -26,7 +26,7 @@ func assign(offer):
 	position = path.pop_front()
 
 func compute_cost(offer):
-	var p = RoadNetwork.find_path(position, offer.pickup.position())
+	var p = RoadNetwork.find_path(position, offer.pickup.position)
 	if p.empty():
 		return -1
 	else:
@@ -43,11 +43,11 @@ func progress(delta):
 	progress += delta * speed;
 	
 	if progress > 1.0:
-		if current_state == STATE.STARTING and position == current_task.pickup.position():
+		if current_state == STATE.STARTING and position == current_task.pickup.position:
 			inventory = current_task.commodity()
 			current_task.start()
 			current_state = STATE.DOING
-		elif current_state == STATE.DOING and position == current_task.dropoff.position():
+		elif current_state == STATE.DOING and position == current_task.dropoff.position:
 			inventory = null
 			current_task.complete()
 			current_state = STATE.IDLE
