@@ -3,6 +3,7 @@ extends Node
 var Generation = load("res://Market/Generation.gd")
 
 signal seeking_requests(generation)
+signal generate_prices(generation)
 signal seeking_offers(generation)
 
 var current_generation
@@ -13,6 +14,7 @@ func _ready():
 func get_offers():
 	current_generation = Generation.new()
 	emit_signal("seeking_requests", current_generation)
+	emit_signal("generate_prices", current_generation)
 	emit_signal("seeking_offers", current_generation)
 	
 	return current_generation.get_offers()

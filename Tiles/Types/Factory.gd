@@ -1,32 +1,46 @@
 extends Spatial
 
 var tile
-const Bot = preload("res://Bot.tscn")
-var requests = []
 
-var in_progress_requests = []
-var inventory = 0
+const Bot = preload("res://Bot.tscn")
+const Request = preload("res://Market/Request.gd")
+const Slot = preload("res://Slot.gd")
+
+var price_sheet = {}
+var slot = Slot.new()
 
 func _ready():
 	tile.set_colour(Color.purple)
+	add_child(slot, true)
+	slot.connect("request_empty", self, "on_slot_empty")
 
 func _exit_tree():
 	disable()
 
 func enable():
-	Market.connect("seeking_requests", self, "on_seeking_requests")
+	Market.connect("generate_prices", self, "on_generate_prices")
+	make_requests()
 	RoadNetwork.add_building(position())
 
 func disable():
-	Market.disconnect("seeking_requests", self, "on_seeking_requests")
+	Market.disconnect("generate_prices", self, "on_generate_prices")
 	RoadNetwork.remove_building(position())
-	for request in requests:
-		TaskManager.remove_dropoff(request)
 	$Timer.stop()
 
+func make_requests():
+	for _i in range(2):
+		var req = Request.new()
+		req.price_sheet = price_sheet
+		req.commodity = 1
+		req.position = position()
+		slot.add_child(req, true)
+
 func _on_Timer_timeout():
-	inventory -= 2
 	make_bot()
+	make_requests()
+
+func on_slot_empty():
+	$Timer.start()
 
 func make_bot():
 	var instance = Bot.instance()
@@ -34,40 +48,10 @@ func make_bot():
 	if Flags.DEBUG_BOT_LOCATION:
 		get_tree().root.add_child(instance)
 	TaskManager.add_bot(instance)
-	
-func complete(req):
-	in_progress_requests.erase(req)
-	inventory += 1
-	if inventory >= 2:
-		$Timer.start()
 
 func position():
 	var o = global_transform.origin
 	return Vector2(o.x, o.z)
 
-class Request:
-	var source
-	var commodity = 1
-
-	func benefit():
-		return (1.0 - inverse_lerp(0, 20, TaskManager.number_of_bots)) * 100
-	
-	func position():
-		return source.position()
-	
-	func accept():
-		source.in_progress_requests.append(self)
-	
-	func complete():
-		source.complete(self)
-	
-	func building():
-		return source
-
-func on_seeking_requests(generation):
-	var n = 2 - (inventory + in_progress_requests.size())
-	
-	for _i in range(0, n):
-		var r = Request.new()
-		r.source = self
-		generation.add_request(r)
+func on_generate_prices(generation):
+	price_sheet[1] = (1.0 - inverse_lerp(0, 20, TaskManager.number_of_bots)) * 100

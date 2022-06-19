@@ -1,8 +1,6 @@
 extends Node
 
-const PriceSheet = preload("res://Market/PriceSheet.gd")
-
-export (Resource) var price_sheet
+export (Dictionary) var price_sheet
 export var accepted = false
 export (int) var exclusive_id = 0
 export (int) var commodity
@@ -11,10 +9,14 @@ export (Vector2) var position
 signal accepted(task)
 signal completed(task)
 
+func _init():
+	._init()
+	name = "Offer"
+
 func _ready():
 	Market.connect("seeking_offers", self, "on_seeking_offers")
 	if not price_sheet:
-		price_sheet = PriceSheet.new()
+		price_sheet = {}
 
 func _exit_tree():
 	Market.disconnect("seeking_offers", self, "on_seeking_offers")
@@ -31,7 +33,7 @@ func on_seeking_offers(generation):
 		offer.generation = generation
 		offer.dropoff = request
 		offer.pickup = self
-		offer.keep_benefit = price_sheet.prices.get(commodity, 0.0)
+		offer.keep_benefit = price_sheet.get(commodity, 0.0)
 		offer.building = get_parent()
 		generation.add_offer(offer)
 
