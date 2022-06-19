@@ -3,6 +3,10 @@ extends Node
 var working_bots = []
 var idle_bots = []
 
+# This operates as a set, but since I have to put something at the key it may
+# as well be the object holding the lock
+var exclusive_ids = {}
+
 var number_of_bots = 0
 
 var level
@@ -30,25 +34,49 @@ func make_matches():
 	if idle_bots.empty():
 		return
 	
-	var taken_pickups = []
-	var taken_dropoffs = []
+	# These are the things we're assigning in this round
+	# But they aren't globally unique, just unique for this batch
+	var taken_objs = {}
 	
 	for offer in Market.get_offers():
 		if idle_bots.empty():
 			break
 		
-		if taken_pickups.has(offer.pickup):
-			continue
+		var pick = offer.pickup
+		var drop = offer.dropoff.source
 		
-		if taken_dropoffs.has(offer.dropoff):
-			continue
+		if pick.exclusive_id != 0:
+			if exclusive_ids.has(pick.exclusive_id):
+				continue
+		else:
+			if taken_objs.has(pick.get_instance_id()):
+				continue
+		
+		if drop.exclusive_id != 0:
+			if exclusive_ids.has(drop.exclusive_id):
+				continue
+		else:
+			if taken_objs.has(drop.get_instance_id()):
+				continue
 		
 		var bot = bot_for_offer(offer)
 		if not bot:
 			continue
 		
-		taken_pickups.append(offer.pickup)
-		taken_dropoffs.append(offer.dropoff)
+		if pick.exclusive_id != 0:
+			var i = pick.exclusive_id
+			exclusive_ids[i] = offer
+			pick.connect("completed", self, "release_exclusive", [i])
+		else:
+			taken_objs[pick.get_instance_id()] = offer
+		
+		if drop.exclusive_id != 0:
+			var i = drop.exclusive_id
+			exclusive_ids[i] = offer
+			drop.connect("completed", self, "release_exclusive", [i])
+		else:
+			taken_objs[drop.get_instance_id()] = offer
+		
 		bot.assign(offer)
 		working_bots.append(bot)
 		idle_bots.erase(bot)
@@ -90,3 +118,6 @@ func priority_sort(one, two):
 		return true
 	else:
 		return false
+
+func release_exclusive(_thing, id):
+	exclusive_ids.erase(id)

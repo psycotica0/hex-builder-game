@@ -1,119 +1,61 @@
 extends Spatial
 
+const Offer = preload("res://Market/Offer.gd")
+const Request = preload("res://Market/Request.gd")
+const Slot = preload("res://Slot.gd")
+
 var tile
 
 var goals = {
 	0: 7
 }
 
-class Request:
-	var source
-	var commodity = 0
-	var pressure
-	
-	func _init(s, p):
-		source = s
-		pressure = p
+var inventory = {}
 
-	func benefit():
-		return pressure
-	
-	func position():
-		return source.position()
-	
-	func accept():
-		source.accepted_task = self
-	
-	func complete():
-		source.dropoff(self)
-	
-	func building():
-		return source.building()
-
-class Offer:
-	var dropoff
-	var pickup
-	var generation
-	var pressure
-	
-	func accept():
-		pickup.accepted_task = self
-		dropoff.accept()
-	
-	func complete():
-		dropoff.complete()
-	
-	func start():
-		pickup.pickup()
-		
-	func commodity():
-		return dropoff.commodity
-		
-	func benefit():
-		var benefit = dropoff.benefit() - pressure
-		var path = RoadNetwork.path_length(pickup.position(), dropoff.position())
-		
-		if path == 0:
-			return 0
-		else:
-			return benefit - path
-	
-	func building():
-		return pickup.building()
-
-class Slot:
-	var filled = false
-	var commodity
-	var holder
-	var accepted_task
-	
-	func _init(h):
-		holder = h
-	
-	func on_seeking_offers_with_pressure(generation, pressure):
-		if (not filled) or accepted_task:
-			return
-		
-		for request in generation.get_requests(commodity):
-			if request.building() == building():
-				continue
-			
-			var offer = Offer.new()
-			offer.generation = generation
-			offer.dropoff = request
-			offer.pickup = self
-			offer.pressure = pressure[commodity]
-			generation.add_offer(offer)
-	
-	func on_seeking_requests_with_pressure(generation, pressure):
-		if filled or accepted_task:
-			return
-		
-		for commodity in pressure:
-			generation.add_request(Request.new(self, pressure[commodity]))
-	
-	func pickup():
-		filled = false
-		accepted_task = null
-	
-	func dropoff(req):
-		filled = true
-		commodity = req.commodity
-		accepted_task = null
-	
-	func position():
-		return holder.position()
-	
-	func building():
-		return holder
-
-var slots = []
+var price_sheet = {}
 
 func _ready():
 	tile.set_colour(Color.lightgoldenrod)
 	
-	for i in range(10):
-		slots.append(Slot.new(self))
+	for commodity in goals:
+		inventory[commodity] = 0
+	
+	for _i in range(10):
+		var slot = Slot.new()
+		add_requests(slot)
+		add_child(slot, true)
+
+func add_requests(slot):
+	for commodity in goals:
+		var request = Request.new()
+		request.price_sheet = price_sheet
+		request.commodity = commodity
+		request.position = position()
+		request.connect("completed", self, "on_request_completed", [slot])
+		# Only one request from this slot can be done at a time
+		request.exclusive_id = slot.get_instance_id()
+		slot.add_child(request, true)
+
+func on_offer_completed(offer, slot):
+	inventory[offer.commodity] -= 1
+	add_requests(slot)
+
+func on_request_completed(request, slot):
+	inventory[request.commodity] += 1
+	
+	var offer = Offer.new()
+	offer.commodity = request.commodity
+	offer.position = position()
+	offer.price_sheet = price_sheet
+	offer.connect("completed", self, "on_offer_completed", [slot])
+	
+	# Remove any other requests, this slot is now full
+	for child in slot.get_children():
+		# The request will remove itself
+		if child != request:
+			slot.remove_child(child)
+	
+	slot.add_child(offer, true)
 
 func position():
 	var o = global_transform.origin
@@ -123,36 +65,14 @@ func _exit_tree():
 	disable()
 
 func enable():
-	Market.connect("seeking_offers", self, "on_seeking_offers")
-	Market.connect("seeking_requests", self, "on_seeking_requests")
+	Market.connect("generate_prices", self, "generate_prices")
 	
 	RoadNetwork.add_building(position())
 
 func disable():
-	Market.disconnect("seeking_offers", self, "on_seeking_offers")
-	Market.disconnect("seeking_requests", self, "on_seeking_requests")
+	Market.disconnect("generate_prices", self, "generate_prices")
 	RoadNetwork.remove_building(position())
 
-func generate_offer_pressure(generation):
-	var counts = {}
-	for slot in slots:
-		if slot.filled:
-			if counts.has(slot.commodity):
-				counts[slot.commodity] += 1
-			else:
-				counts[slot.commodity] = 1
-	
+func generate_prices(_generation):
 	for commodity in goals:
-		counts[commodity] = (1.0 - inverse_lerp(0, goals[commodity], counts.get(commodity, 0.0))) * 100
-	
-	return counts
-
-func on_seeking_offers(generation):
-	var pressure = generate_offer_pressure(generation)
-	for slot in slots:
-		slot.on_seeking_offers_with_pressure(generation, pressure)
-
-func on_seeking_requests(generation):
-	var pressure = generate_offer_pressure(generation)
-	for slot in slots:
-		slot.on_seeking_requests_with_pressure(generation, pressure)
+		price_sheet[commodity] = (1.0 - inverse_lerp(0, goals[commodity], inventory.get(commodity, 0))) * 100

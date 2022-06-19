@@ -37,14 +37,14 @@ func on_seeking_offers(generation):
 		offer.building = get_parent()
 		generation.add_offer(offer)
 
-func complete(proposal):
-	emit_signal("completed", proposal)
+func complete(_proposal):
+	emit_signal("completed", self)
 	get_parent().remove_child(self)
 	queue_free()
 
-func accept(proposal):
+func accept(_proposal):
 	accepted = true
-	emit_signal("accepted", proposal)
+	emit_signal("accepted", self)
 
 # XXX: DELETE ONCE MIGRATION COMPLETE
 func position():
