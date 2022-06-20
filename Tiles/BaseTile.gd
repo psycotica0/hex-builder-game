@@ -2,6 +2,9 @@ extends Area
 
 class_name BaseTile
 
+const Slot = preload("res://Slot.gd")
+const Request = preload("res://Market/Request.gd")
+
 const BOUNCE = 1.0 / 16
 
 enum SELECT_STATE { NONE, HOVER, SELECTED }
@@ -10,6 +13,9 @@ var select_state = SELECT_STATE.NONE
 var current_type
 var construction = false
 var building
+var price_sheet = {
+	0: 50.0
+}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -61,8 +67,33 @@ func menus():
 func build(type):
 	construction = true
 	$Holder/Construction.visible = true
-	$Timer.start()
+	
+	if Flags.FREE_CONSTRUCTION:
+		construction_paid(null)
+	else:
+		var slot = Slot.new()
+		for _i in range(3):
+			var r = Request.new()
+			r.commodity = 0
+			r.price_sheet = price_sheet
+			r.position = position()
+			slot.add_child(r, true)
+		slot.connect("request_empty", self, "construction_paid", [slot])
+		add_child(slot, true)
+		RoadNetwork.add_building(position())
+	
 	set_type(type)
+
+func position():
+	var o = global_transform.origin
+	return Vector2(o.x, o.z)
+
+func construction_paid(slot):
+	if slot:
+		remove_child(slot)
+		slot.queue_free()
+	RoadNetwork.remove_building(position())
+	$Timer.start()
 
 func set_type(type):
 	for c in $Holder/Type.get_children():

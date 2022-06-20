@@ -6,6 +6,9 @@ var buildings = {}
 var roads = {}
 
 func add_building(position):
+	if buildings.has(position):
+		return
+	
 	var id = network.get_available_point_id()
 	network.add_point(id, position, 10)
 	
@@ -23,6 +26,9 @@ func remove_building(position):
 	network.remove_point(id)
 
 func add_road(position):
+	if roads.has(position):
+		return
+	
 	var id = network.get_available_point_id()
 	network.add_point(id, position, 1)
 	

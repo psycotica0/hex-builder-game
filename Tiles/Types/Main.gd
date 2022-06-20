@@ -18,11 +18,11 @@ func _exit_tree():
 	disable()
 
 func enable():
-	RoadNetwork.add_building(position())
+	RoadNetwork.add_road(position())
 	$Timer.start()
 
 func disable():
-	RoadNetwork.remove_building(position())
+	RoadNetwork.remove_road(position())
 	$Timer.stop()
 
 func _on_Timer_timeout():
